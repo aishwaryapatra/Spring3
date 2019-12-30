@@ -62,7 +62,9 @@ public class UserServiceImplTest {
 		user.setUserMobile("777777777");
 		user.setUserAddedDate(new Date());
 		when(userDAO.updateUser(user)).thenReturn(true);
+		System.out.println("testUpdateUserSuccess update call START");
 		User updatedUser = userServiceImpl.updateUser(user, "Jhon123");
+		System.out.println("testUpdateUserSuccess update call END");
 		assertEquals("777777777", updatedUser.getUserMobile());
 		verify(userDAO, times(1)).getUserById(user.getUserId());
 		verify(userDAO, times(1)).updateUser(user);
@@ -73,9 +75,10 @@ public class UserServiceImplTest {
 
 		when(userDAO.getUserById("Jhon123")).thenReturn(null);
 		when(userDAO.updateUser(user)).thenReturn(true);
+		System.out.println("before unused annotation");
 		@SuppressWarnings("unused")
 		User updatedUser = userServiceImpl.updateUser(user, "Jhon123");
-
+		System.out.println("updatedUser"+updatedUser);
 	}
 
 	@Test
@@ -104,16 +107,19 @@ public class UserServiceImplTest {
 
 		when(userDAO.validateUser("Jhon123", "123456")).thenReturn(true);
 		boolean status = userServiceImpl.validateUser("Jhon123", "123456");
+		System.out.println("status "+status); 
 		assertEquals(true, status);
 		verify(userDAO, times(1)).validateUser("Jhon123", "123456");
 	}
 
 	@Test(expected = UserNotFoundException.class)
 	public void testValidateUserFailure() throws UserNotFoundException {
+		System.out.println("before "); 
 		when(userDAO.validateUser("Jhon123", "123456")).thenReturn(false);
+		System.out.println("userDAO.validateUser status: "+userDAO.validateUser("Jhon123", "123456")); 
 		@SuppressWarnings("unused")
 		boolean status = userServiceImpl.validateUser("Jhon123", "123456");
-
+		System.out.println("status: "+status );
 	}
 
 	@Test

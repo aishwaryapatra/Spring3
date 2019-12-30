@@ -1,5 +1,8 @@
 package com.stackroute.keepnote.service;
 
+import org.springframework.stereotype.Service;
+
+import com.stackroute.keepnote.dao.UserDAO;
 import com.stackroute.keepnote.exception.UserAlreadyExistException;
 import com.stackroute.keepnote.exception.UserNotFoundException;
 import com.stackroute.keepnote.model.User;
@@ -13,7 +16,7 @@ import com.stackroute.keepnote.model.User;
 * better. Additionally, tool support and additional behavior might rely on it in the 
 * future.
 * */
-
+@Service
 public class UserServiceImpl implements UserService {
 
 	/*
@@ -21,14 +24,24 @@ public class UserServiceImpl implements UserService {
 	 * autowiring) Please note that we should not create any object using the new
 	 * keyword.
 	 */
+	
+	private UserDAO userDAO;
+	
+	public UserServiceImpl(UserDAO userDAO) {
+		this.userDAO = userDAO;
+	}
 
 	/*
 	 * This method should be used to save a new user.
 	 */
 
 	public boolean registerUser(User user) throws UserAlreadyExistException {
-		return false;
-
+		
+		if(userDAO.getUserById(user.getUserId())==null)
+		{
+			return userDAO.registerUser(user);
+		}
+		throw new UserAlreadyExistException("User already exists");
 	}
 
 	/*
@@ -36,8 +49,20 @@ public class UserServiceImpl implements UserService {
 	 */
 
 	public User updateUser(User user, String userId) throws Exception {
-		return user;
-
+		boolean flag= userDAO.updateUser(user);
+		System.out.println("flag: "+flag);
+		if(flag)
+		{
+			User userRet =  userDAO.getUserById(userId);
+			System.out.println("userRet object"+ userRet);
+			if(userRet==null)
+			{
+				throw new Exception();
+			}
+			return userRet;
+		}
+			System.out.println("before throwing Exception()");
+			throw new Exception();
 	}
 
 	/*
@@ -45,8 +70,15 @@ public class UserServiceImpl implements UserService {
 	 */
 
 	public User getUserById(String UserId) throws UserNotFoundException {
-		return null;
-
+		User user = userDAO.getUserById(UserId);
+		if(user!=null)
+		{
+			return user;
+		}
+		else
+		{
+			throw new UserNotFoundException("User not found");
+		}
 	}
 
 	/*
@@ -54,14 +86,27 @@ public class UserServiceImpl implements UserService {
 	 */
 
 	public boolean validateUser(String userId, String password) throws UserNotFoundException {
-		return false;
+		
+		/*System.out.println("userId: "+userId);
+		System.out.println("password: "+password);
+		if(userDAO.getUserById(userId)!=null)
+		{
+			boolean flag = userDAO.validateUser(userId, password);
+			System.out.println("validate succes flag "+flag);
+			return flag;
+		}
+		throw new UserNotFoundException("User not found ");*/
+		if(userDAO.validateUser(userId, password))
+		{
+			return true;
+		}
+		throw new UserNotFoundException("User not found ");
 
 	}
 
 	/* This method should be used to delete an existing user. */
 	public boolean deleteUser(String UserId) {
-		return false;
-
+		return userDAO.deleteUser(UserId);
 	}
 
 }

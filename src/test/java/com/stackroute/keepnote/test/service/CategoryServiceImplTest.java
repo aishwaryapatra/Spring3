@@ -81,11 +81,15 @@ public class CategoryServiceImplTest {
 
 	@Test(expected = CategoryNotFoundException.class)
 	public void testUpdateCategoryFailure() throws CategoryNotFoundException {
+		System.out.println("before getCategoryById "+categoryDAO.getCategoryById(1));
 		when(categoryDAO.getCategoryById(1)).thenReturn(null);
+		System.out.println("before ugetCategoryById "+categoryDAO.getCategoryById(1));
+		System.out.println("before update status "+categoryDAO.updateCategory(category));
 		when(categoryDAO.updateCategory(category)).thenReturn(true);
+		System.out.println("after update status "+categoryDAO.updateCategory(category));
 		@SuppressWarnings("unused")
 		Category updatedCategory = categoryServiceImpl.updateCategory(category, 1);
-
+		System.out.println("updatedCategory"+updatedCategory);
 	}
 
 	@Test
@@ -101,8 +105,14 @@ public class CategoryServiceImplTest {
 	public void testGetCategoryByIdFailure() throws CategoryNotFoundException {
 
 		when(categoryDAO.getCategoryById(2)).thenReturn(null);
+		System.out.println("before");
 		@SuppressWarnings("unused")
 		Category fetechedCategory = categoryServiceImpl.getCategoryById(2);
+		System.out.println("After: "+fetechedCategory);
+		if(fetechedCategory!=null)
+		{
+			System.out.println("fetechedCategory id: "+fetechedCategory.getCategoryId());
+		}
 
 	}
 
